@@ -1,0 +1,27 @@
+{
+  "name": "products-expiration-api",
+  "version": "1.0.0",
+  "description": "API simple para demostrar integracion continua con Jenkins, Docker, Jest y SonarQube.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "jenkins",
+    "docker",
+    "jest",
+    "sonarqube"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2"
+  }
+}
