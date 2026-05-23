@@ -1,0 +1,65 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HOST = 'tcp://localhost:2375'
+        DOCKER_IMAGE = 'lab-ci-api'
+        CONTAINER_NAME = 'lab-ci-api-container'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Instalar dependencias') {
+            steps {
+                bat 'npm install'
+            }
+        }
+
+        stage('Build local') {
+            steps {
+                bat 'npm run build'
+            }
+        }
+
+        stage('Tests automatizados con Jest') {
+            steps {
+                bat 'npm test'
+            }
+        }
+
+        stage('Construir imagen Docker') {
+            steps {
+                bat 'docker build -t %DOCKER_IMAGE% .'
+            }
+        }
+
+        stage('Desplegar en Docker') {
+            steps {
+                bat 'docker rm -f %CONTAINER_NAME% || echo No habia contenedor previo'
+                bat 'docker run -d --name %CONTAINER_NAME% -p 3000:3000 %DOCKER_IMAGE%'
+            }
+        }
+
+        stage('Verificar despliegue') {
+            steps {
+                bat 'powershell -Command "Start-Sleep -Seconds 3"'
+                bat 'curl.exe -f http://localhost:3000/health'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline finalizado correctamente: build, tests y despliegue completados.'
+        }
+
+        failure {
+            echo 'El pipeline fallo. Revisar la etapa marcada en rojo.'
+        }
+    }
+}
