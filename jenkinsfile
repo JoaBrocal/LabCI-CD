@@ -57,66 +57,57 @@ pipeline {
     }
 
     post {
-        always {
-            emailext(
-                to: "${env.MAIL_TO}",
-                from: "joaquinbrocal25@gmail.com",
-                replyTo: "joaquinbrocal25@gmail.com",
-                subject: "[${currentBuild.currentResult}] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-                mimeType: 'text/html',
-                attachLog: true,
-                compressLog: true,
-                body: """
-                    <html>
-                        <body>
-                            <h2>Reporte de pipeline - LabCI-CD</h2>
+    always {
+        emailext(
+            to: "${env.MAIL_TO}",
+            from: "joaquinbrocal25@gmail.com",
+            replyTo: "joaquinbrocal25@gmail.com",
+            subject: "[${currentBuild.currentResult}] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+            mimeType: 'text/html',
+            body: """
+                <html>
+                    <body>
+                        <h2>Reporte de pipeline - LabCI-CD</h2>
 
-                            <p><b>Proyecto:</b> ${env.JOB_NAME}</p>
-                            <p><b>Build:</b> #${env.BUILD_NUMBER}</p>
-                            <p><b>Resultado:</b> ${currentBuild.currentResult}</p>
-                            <p><b>URL de Jenkins:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                        <p><b>Proyecto:</b> ${env.JOB_NAME}</p>
+                        <p><b>Build:</b> #${env.BUILD_NUMBER}</p>
+                        <p><b>Resultado:</b> ${currentBuild.currentResult}</p>
+                        <p><b>URL de Jenkins:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
 
-                            <hr>
+                        <hr>
 
-                            <h3>Etapas del pipeline</h3>
-                            <ul>
-                                <li>Checkout del código desde GitHub</li>
-                                <li>Instalación de dependencias con npm install</li>
-                                <li>Build local con npm run build</li>
-                                <li>Tests automatizados con npm test</li>
-                                <li>Construcción de imagen Docker</li>
-                                <li>Despliegue local en contenedor Docker</li>
-                                <li>Verificación del endpoint /health</li>
-                            </ul>
+                        <h3>Etapas del pipeline</h3>
+                        <ul>
+                            <li>Checkout del código desde GitHub</li>
+                            <li>Instalación de dependencias con npm install</li>
+                            <li>Build local con npm run build</li>
+                            <li>Tests automatizados con npm test</li>
+                            <li>Construcción de imagen Docker</li>
+                            <li>Despliegue local en contenedor Docker</li>
+                            <li>Verificación del endpoint /health</li>
+                        </ul>
 
-                            <hr>
+                        <hr>
 
-                            <p>
-                                Si el resultado fue <b>SUCCESS</b>, la aplicación fue construida,
-                                testeada, dockerizada, desplegada y verificada correctamente.
-                            </p>
+                        <p>
+                            Este correo fue enviado automáticamente por Jenkins como mecanismo
+                            de feedback del proceso de Integración Continua.
+                        </p>
 
-                            <p>
-                                Si el resultado fue <b>FAILURE</b>, revisar la consola adjunta para
-                                identificar la etapa que falló.
-                            </p>
+                        <p>
+                            Para ver el log completo, ingresar al enlace de Jenkins indicado arriba.
+                        </p>
+                    </body>
+                </html>
+            """
+        )
+    }
 
-                            <p>
-                                Este correo fue enviado automáticamente por Jenkins como mecanismo
-                                de feedback del proceso de Integración Continua.
-                            </p>
-                        </body>
-                    </html>
-                """
-            )
-        }
+    success {
+        echo 'Pipeline finalizado correctamente. Jenkins intento enviar feedback por mail.'
+    }
 
-        success {
-            echo 'Pipeline finalizado correctamente. Se envio feedback por mail.'
-        }
-
-        failure {
-            echo 'El pipeline fallo. Se intento enviar feedback por mail con el log adjunto.'
-        }
+    failure {
+        echo 'El pipeline fallo. Jenkins intento enviar feedback por mail.'
     }
 }
