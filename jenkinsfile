@@ -60,10 +60,12 @@ pipeline {
         always {
             emailext(
                 to: "${env.MAIL_TO}",
+                from: "joaquinbrocal25@gmail.com",
+                replyTo: "joaquinbrocal25@gmail.com",
                 subject: "[${currentBuild.currentResult}] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
                 mimeType: 'text/html',
-                attachLog: false,
-                compressLog: false,
+                attachLog: true,
+                compressLog: true,
                 body: """
                     <html>
                         <body>
