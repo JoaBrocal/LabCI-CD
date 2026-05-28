@@ -5,6 +5,9 @@ pipeline {
         DOCKER_HOST = 'tcp://localhost:2375'
         DOCKER_IMAGE = 'lab-ci-api'
         CONTAINER_NAME = 'lab-ci-api-container'
+        HOST_PORT = '3001'
+        CONTAINER_PORT = '3000'
+        MAIL_TO = 'joaquinbrocal25@gmail.com'
     }
 
     stages {
@@ -41,25 +44,77 @@ pipeline {
         stage('Desplegar en Docker') {
             steps {
                 bat 'docker rm -f %CONTAINER_NAME% || echo No habia contenedor previo'
-                bat 'docker run -d --name %CONTAINER_NAME% -p 3000:3000 %DOCKER_IMAGE%'
+                bat 'docker run -d --name %CONTAINER_NAME% -p %HOST_PORT%:%CONTAINER_PORT% %DOCKER_IMAGE%'
             }
         }
 
         stage('Verificar despliegue') {
             steps {
                 bat 'powershell -Command "Start-Sleep -Seconds 3"'
-                bat 'curl.exe -f http://localhost:3000/health'
+                bat 'curl.exe -f http://localhost:%HOST_PORT%/health'
             }
         }
     }
 
     post {
+        always {
+            emailext(
+                to: "${env.MAIL_TO}",
+                subject: "[${currentBuild.currentResult}] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+                mimeType: 'text/html',
+                attachLog: true,
+                compressLog: true,
+                body: """
+                    <html>
+                        <body>
+                            <h2>Reporte de pipeline - LabCI-CD</h2>
+
+                            <p><b>Proyecto:</b> ${env.JOB_NAME}</p>
+                            <p><b>Build:</b> #${env.BUILD_NUMBER}</p>
+                            <p><b>Resultado:</b> ${currentBuild.currentResult}</p>
+                            <p><b>URL de Jenkins:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+
+                            <hr>
+
+                            <h3>Etapas del pipeline</h3>
+                            <ul>
+                                <li>Checkout del código desde GitHub</li>
+                                <li>Instalación de dependencias con npm install</li>
+                                <li>Build local con npm run build</li>
+                                <li>Tests automatizados con npm test</li>
+                                <li>Construcción de imagen Docker</li>
+                                <li>Despliegue local en contenedor Docker</li>
+                                <li>Verificación del endpoint /health</li>
+                            </ul>
+
+                            <hr>
+
+                            <p>
+                                Si el resultado fue <b>SUCCESS</b>, la aplicación fue construida,
+                                testeada, dockerizada, desplegada y verificada correctamente.
+                            </p>
+
+                            <p>
+                                Si el resultado fue <b>FAILURE</b>, revisar la consola adjunta para
+                                identificar la etapa que falló.
+                            </p>
+
+                            <p>
+                                Este correo fue enviado automáticamente por Jenkins como mecanismo
+                                de feedback del proceso de Integración Continua.
+                            </p>
+                        </body>
+                    </html>
+                """
+            )
+        }
+
         success {
-            echo 'Pipeline finalizado correctamente: build, tests y despliegue completados.'
+            echo 'Pipeline finalizado correctamente. Se envio feedback por mail.'
         }
 
         failure {
-            echo 'El pipeline fallo. Revisar la etapa marcada en rojo.'
+            echo 'El pipeline fallo. Se intento enviar feedback por mail con el log adjunto.'
         }
     }
 }
