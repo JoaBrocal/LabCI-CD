@@ -56,12 +56,12 @@ pipeline {
         }
     }
 
-    post {
+   post {
     always {
         emailext(
             to: "${env.MAIL_TO}",
-            from: "joaquinbrocal25@gmail.com",
-            replyTo: "joaquinbrocal25@gmail.com",
+            from: "TU_CORREO_SMTP@gmail.com",
+            replyTo: "TU_CORREO_SMTP@gmail.com",
             subject: "[${currentBuild.currentResult}] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
             mimeType: 'text/html',
             body: """
