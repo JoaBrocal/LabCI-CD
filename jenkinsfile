@@ -62,8 +62,8 @@ pipeline {
                 to: "${env.MAIL_TO}",
                 subject: "[${currentBuild.currentResult}] ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
                 mimeType: 'text/html',
-                attachLog: true,
-                compressLog: true,
+                attachLog: false,
+                compressLog: false,
                 body: """
                     <html>
                         <body>
