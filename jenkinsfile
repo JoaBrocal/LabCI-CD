@@ -7,7 +7,7 @@ pipeline {
         CONTAINER_NAME = 'lab-ci-api-container'
         HOST_PORT = '3001'
         CONTAINER_PORT = '3000'
-        MAIL_TO = 'joaquinbrocal25@ca.frre.utn.edu.ar'
+        MAIL_TO = 'joaquinbrocal25@gmail.com'
     }
 
     stages {
@@ -110,7 +110,7 @@ pipeline {
         }
 
         success {
-            echo 'Pipeline finalizado correctamente. Se envio feedback por mail.'
+            echo 'Pipeline finalizado correctamente. Se intentó enviar feedback por mail.'
         }
 
         failure {
