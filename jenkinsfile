@@ -43,18 +43,35 @@ pipeline {
 
         stage('Desplegar en Docker') {
             steps {
-                bat 'docker rm -f %CONTAINER_NAME% || echo No habia contenedor previo'
-                bat 'docker run -d --name %CONTAINER_NAME% -p %HOST_PORT%:%CONTAINER_PORT% %DOCKER_IMAGE%'
+                bat '''
+                    docker rm -f %CONTAINER_NAME% || echo No habia contenedor previo
+                    docker run -d --name %CONTAINER_NAME% -p 127.0.0.1:%HOST_PORT%:%CONTAINER_PORT% %DOCKER_IMAGE%
+                    docker ps -a --filter "name=%CONTAINER_NAME%"
+                    docker port %CONTAINER_NAME%
+                '''
             }
         }
 
         stage('Verificar despliegue') {
             steps {
-                bat 'powershell -Command "Start-Sleep -Seconds 3"'
-                bat 'curl.exe -f http://localhost:%HOST_PORT%/health'
+                bat '''
+                    echo Esperando respuesta de la API...
+
+                    for /L %%i in (1,1,10) do (
+                        curl.exe -f http://127.0.0.1:%HOST_PORT%/health && exit /b 0
+                        echo Intento %%i fallido. Reintentando en 3 segundos...
+                        timeout /t 3 /nobreak >nul
+                    )
+
+                    echo La API no respondio correctamente. Mostrando diagnostico:
+                    docker ps -a --filter "name=%CONTAINER_NAME%"
+                    docker logs %CONTAINER_NAME%
+                    exit /b 1
+                '''
             }
         }
     }
+
 
     post {
         always {
