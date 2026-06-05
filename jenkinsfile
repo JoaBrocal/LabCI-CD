@@ -56,11 +56,29 @@ pipeline {
         stage('Verificar despliegue') {
             steps {
                 bat '''
+                    echo Estado del contenedor:
+                    docker ps -a --filter "name=%CONTAINER_NAME%"
+
+                    echo Logs iniciales del contenedor:
+                    docker logs %CONTAINER_NAME%
+
                     echo Verificando la API desde dentro del contenedor...
 
-                    docker exec %CONTAINER_NAME% node -e "const http=require('http'); http.get('http://127.0.0.1:3000/health', function(res){let data=''; res.on('data', function(c){data+=c}); res.on('end', function(){console.log(data); process.exit(res.statusCode===200?0:1);});}).on('error', function(e){console.error(e.message); process.exit(1);});"
-                '''
-            }
+                    for /L %%i in (1,1,10) do (
+                    docker exec %CONTAINER_NAME% node -e "const http=require('http'); const req=http.get('http://127.0.0.1:3000/health', function(res){let data=''; res.on('data', function(c){data+=c}); res.on('end', function(){console.log(data); process.exit(res.statusCode===200?0:1);});}); req.on('error', function(e){console.error(e.message); process.exit(1);}); req.setTimeout(3000, function(){console.error('timeout'); process.exit(1);});" && exit /b 0
+
+                    echo Intento %%i fallido. Reintentando en 3 segundos...
+                    powershell -Command "Start-Sleep -Seconds 3"
+                )
+
+                echo La API no respondio correctamente. Mostrando diagnostico final:
+                docker ps -a --filter "name=%CONTAINER_NAME%"
+                docker logs %CONTAINER_NAME%
+                docker exec %CONTAINER_NAME% ps
+                exit /b 1
+        '''
+    }
+}
         }
     }
 
