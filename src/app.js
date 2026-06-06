@@ -3,6 +3,8 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.disable("x-powered-by");
+
 app.use(express.json());
 
 app.get("/health", (req, res) => {
@@ -19,3 +21,4 @@ if (require.main === module) {
 }
 
 module.exports = app;
+
