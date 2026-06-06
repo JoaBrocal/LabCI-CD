@@ -4,12 +4,19 @@ info:
   title: Products Expiration API
   description: API simple desarrollada para demostrar un flujo de Integración Continua, testing automatizado, inspección de código, despliegue en Docker y Spec Driven Development.
   version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: http://localhost:3000
-    description: Servidor local de desarrollo
-  - url: http://localhost:3001
-    description: Servidor local desplegado mediante Docker
+  - url: /
+    description: Servidor actual donde se encuentre desplegada la API
+
+security: []
+
+tags:
+  - name: Health
+    description: Endpoints relacionados con la verificación del estado de la API
 
 paths:
   /health:
@@ -19,6 +26,7 @@ paths:
       operationId: getHealth
       tags:
         - Health
+      security: []
       responses:
         "200":
           description: La API está funcionando correctamente.
@@ -29,6 +37,16 @@ paths:
               example:
                 status: ok
                 service: products-expiration-api
+
+        "404":
+          description: Recurso no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: not_found
+                message: Recurso no encontrado.
 
 components:
   schemas:
@@ -47,3 +65,19 @@ components:
           type: string
           description: Nombre del servicio que responde.
           example: products-expiration-api
+
+    ErrorResponse:
+      type: object
+      description: Respuesta estándar para errores de la API.
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Código identificador del error.
+          example: not_found
+        message:
+          type: string
+          description: Descripción legible del error.
+          example: Recurso no encontrado.

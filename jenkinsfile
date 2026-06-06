@@ -23,6 +23,12 @@ pipeline {
             }
         }
 
+        stage('Validar especificación OpenAPI') {
+            steps {
+                bat 'npm run spec:lint'
+            }
+        }
+
         stage('Build local') {
             steps {
                 bat 'npm run build'
