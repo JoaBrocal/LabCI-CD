@@ -35,7 +35,7 @@ pipeline {
             }
         }
 
-        stage('Tests automatizados con Jest') {
+        stage('Tests automatizados y de contrato con Jest') {
             steps {
                 bat 'npm test'
             }

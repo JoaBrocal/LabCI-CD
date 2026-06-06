@@ -53,6 +53,7 @@ components:
     HealthResponse:
       type: object
       description: Respuesta del endpoint de verificación de estado de la API.
+      additionalProperties: false
       required:
         - status
         - service
@@ -60,15 +61,20 @@ components:
         status:
           type: string
           description: Estado actual de la API.
+          enum:
+            - ok
           example: ok
         service:
           type: string
           description: Nombre del servicio que responde.
+          enum:
+            - products-expiration-api
           example: products-expiration-api
 
     ErrorResponse:
       type: object
       description: Respuesta estándar para errores de la API.
+      additionalProperties: false
       required:
         - error
         - message
