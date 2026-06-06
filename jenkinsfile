@@ -34,6 +34,18 @@ pipeline {
                 bat 'npm test'
             }
         }
+        
+        stage('Inspección de código con SonarQube') {
+        steps {
+            withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+            bat '''
+                npx @sonar/scan ^
+                -Dsonar.host.url=http://127.0.0.1:9000 ^
+                -Dsonar.token=%SONAR_TOKEN%
+            '''
+            }
+        }
+}
 
         stage('Construir imagen Docker') {
             steps {
