@@ -1,0 +1,49 @@
+openapi: 3.0.4
+
+info:
+  title: Products Expiration API
+  description: API simple desarrollada para demostrar un flujo de Integración Continua, testing automatizado, inspección de código, despliegue en Docker y Spec Driven Development.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+    description: Servidor local de desarrollo
+  - url: http://localhost:3001
+    description: Servidor local desplegado mediante Docker
+
+paths:
+  /health:
+    get:
+      summary: Verifica el estado de la API.
+      description: Retorna el estado actual del servicio para comprobar que la API se encuentra activa y respondiendo correctamente.
+      operationId: getHealth
+      tags:
+        - Health
+      responses:
+        "200":
+          description: La API está funcionando correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              example:
+                status: ok
+                service: products-expiration-api
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      description: Respuesta del endpoint de verificación de estado de la API.
+      required:
+        - status
+        - service
+      properties:
+        status:
+          type: string
+          description: Estado actual de la API.
+          example: ok
+        service:
+          type: string
+          description: Nombre del servicio que responde.
+          example: products-expiration-api
