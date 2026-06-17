@@ -118,21 +118,6 @@ pipeline {
                             <p><b>Resultado:</b> ${currentBuild.currentResult}</p>
                             <p><b>URL de Jenkins:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
 
-                            <hr>
-
-                            <h3>Etapas del pipeline</h3>
-                            <ul>
-                                <li>Checkout del código desde GitHub</li>
-                                <li>Instalación de dependencias con npm install</li>
-                                <li>Build local con npm run build</li>
-                                <li>Tests automatizados con npm test</li>
-                                <li>Construcción de imagen Docker</li>
-                                <li>Despliegue local en contenedor Docker</li>
-                                <li>Verificación del endpoint /health</li>
-                            </ul>
-
-                            <hr>
-
                             <p>
                                 Si el resultado fue <b>SUCCESS</b>, la aplicación fue construida,
                                 testeada, dockerizada, desplegada y verificada correctamente.
