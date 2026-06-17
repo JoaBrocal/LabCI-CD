@@ -74,12 +74,6 @@ pipeline {
         stage('Verificar despliegue') {
             steps {
                 bat '''
-                    echo Estado del contenedor:
-                    docker ps -a --filter "name=%CONTAINER_NAME%"
-
-                    echo Logs iniciales del contenedor:
-                    docker logs %CONTAINER_NAME%
-
                     echo Verificando la API desde dentro del contenedor...
 
                     for /L %%i in (1,1,10) do (
