@@ -9,7 +9,7 @@ app.use(express.json());
 
 app.get("/health", (req, res) => {
   res.status(200).json({
-    status: "okk",
+    status: "ok",
     service: "products-expiration-api",
   });
 });
